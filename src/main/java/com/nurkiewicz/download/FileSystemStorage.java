@@ -21,6 +21,9 @@ public class FileSystemStorage implements FileStorage {
 	private static final Logger log = LoggerFactory.getLogger(FileSystemStorage.class);
 
 	@Override
+    /**
+     * Optional is used with events driven
+     */
 	public Optional<FilePointer> findFile(UUID uuid) {
 		log.debug("Downloading {}", uuid);
 		final URL resource = getClass().getResource("/logback.xml");

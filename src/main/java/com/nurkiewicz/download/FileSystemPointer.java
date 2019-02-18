@@ -19,6 +19,7 @@ public class FileSystemPointer implements FilePointer {
 	public FileSystemPointer(File target) {
 		try {
 			this.target = target;
+			// murmur3() supports 128 at most
 			this.tag = Files.hash(target, Hashing.sha512());
 			final String contentType = java.nio.file.Files.probeContentType(target.toPath());
 			this.mediaTypeOrNull = contentType != null ?
@@ -80,7 +81,8 @@ public class FileSystemPointer implements FilePointer {
 	}
 
 	@Override
-	public boolean modifiedAfter(Instant clientTime) {
-		return !clientTime.isBefore(getLastModified());
+	public boolean noModifiedAfter(Instant clientTime) {
+		// no modified <=> client's '>=' lastest
+	    return !clientTime.isBefore(getLastModified());
 	}
 }

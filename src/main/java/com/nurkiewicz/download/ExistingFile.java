@@ -40,7 +40,10 @@ public class ExistingFile {
 	}
 
 	public ResponseEntity<Resource> handle(Optional<String> requestEtagOpt, Optional<Date> ifModifiedSinceOpt) {
-		return serveWithCaching(requestEtagOpt, ifModifiedSinceOpt, this::serveDownload);
+        /**
+         * decouple caching from downloading. download method is focus on downloading only not caching.
+         */
+	    return serveWithCaching(requestEtagOpt, ifModifiedSinceOpt, this::serveDownload);
 	}
 
 	private ResponseEntity<Resource> serveWithCaching(
@@ -57,7 +60,7 @@ public class ExistingFile {
 				.orElse(false);
 		final boolean notModifiedSince = ifModifiedSinceOpt
 				.map(Date::toInstant)
-				.map(filePointer::modifiedAfter)
+				.map(filePointer::noModifiedAfter)
 				.orElse(false);
 		return matchingEtag || notModifiedSince;
 	}
@@ -66,7 +69,7 @@ public class ExistingFile {
 		try {
 			log.trace("Redirecting {} '{}'", method, filePointer);
 			return ResponseEntity
-					.status(MOVED_PERMANENTLY)
+					.status(MOVED_PERMANENTLY)  // 301
 					.location(new URI("/download/" + uuid + "/" + filePointer.getOriginalName()))
 					.body(null);
 		} catch (URISyntaxException e) {
@@ -114,7 +117,7 @@ public class ExistingFile {
 
 	private MediaType toMediaType(com.google.common.net.MediaType input) {
 		return input.charset()
-				.transform(c -> new MediaType(input.type(), input.subtype(), c))
+                .transform(c -> new MediaType(input.type(), input.subtype(), c))
 				.or(new MediaType(input.type(), input.subtype()));
 	}
 

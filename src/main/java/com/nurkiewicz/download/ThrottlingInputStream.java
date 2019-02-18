@@ -5,6 +5,9 @@ import com.google.common.util.concurrent.RateLimiter;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Decorator design pattern. Extending the interface and  HASA the target instance.
+ */
 public class ThrottlingInputStream extends InputStream {
 
 	private final InputStream target;

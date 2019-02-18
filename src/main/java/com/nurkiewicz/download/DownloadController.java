@@ -30,6 +30,15 @@ public class DownloadController {
 		this.storage = storage;
 	}
 
+    /**
+     * Redirect the downloading to method which would return file with name.
+     * client-oriented interface.
+     * @param method
+     * @param uuid
+     * @param requestEtagOpt
+     * @param ifModifiedSinceOpt
+     * @return
+     */
 	@RequestMapping(method = {GET, HEAD}, value = "/{uuid}")
 	public ResponseEntity<Resource> redirect(
 			HttpMethod method,
@@ -42,10 +51,20 @@ public class DownloadController {
 				.orElseGet(() -> new ResponseEntity<>(NOT_FOUND));
 	}
 
+    /**
+     * No need to process filename as the name is designated by last request and redirected here.
+     * This filename will be used to store file in browser.
+     * @param method
+     * @param uuid
+     * @param requestEtagOpt
+     * @param ifModifiedSinceOpt
+     * @return
+     */
 	@RequestMapping(method = {GET, HEAD}, value = "/{uuid}/{filename}")
 	public ResponseEntity<Resource> download(
 			HttpMethod method,
 			@PathVariable UUID uuid,
+			// support 304 Not Modified
 			@RequestHeader(IF_NONE_MATCH) Optional<String> requestEtagOpt,
 			@RequestHeader(IF_MODIFIED_SINCE) Optional<Date> ifModifiedSinceOpt
 			) {

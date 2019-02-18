@@ -22,5 +22,5 @@ public interface FilePointer {
 
 	Instant getLastModified();
 
-	boolean modifiedAfter(Instant isModifiedSince);
+	boolean noModifiedAfter(Instant isModifiedSince);
 }
